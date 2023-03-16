@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-import json
+
+from users.services import FileStorage
 
 # class TestAPIView(APIView):
 #     def get(self, *args, **kwargs):
@@ -57,74 +58,15 @@ DELETE  http://localhost:8000/users/<ID>  // видалити юзера по ID
 """
 
 
-class FileStorage:
-
-    def __init__(self, file_name) -> None:
-        print('**** init ****', __class__.__name__)
-        self.__file_name: str = file_name
-        self.__users: list[dict] = []
-        self._read_users()
-        next_id: int = max(self.__users, key=lambda user: user['id'])['id'] + 1 if self.__users else 1
-        self.__id = self.__genid(next_id)
-
-    @staticmethod
-    def __genid(init: int = 1):
-        current = init
-        while True:
-            yield current
-            current += 1
-
-    @property
-    def users(self) -> list[dict]:
-        return self.__users
-
-    def _read_users(self) -> None:
+def throwable(func):
+    def inner(*args, **kwargs):
         try:
-            with open(self.__file_name) as file:
-                self.__users = json.load(file)
-        except (Exception,):
-            self.__users = []
-
-    def _write_users(self) -> None:
-        try:
-            with open(self.__file_name, 'w') as file:
-                json.dump(self.__users, file)
+            func(*args, **kwargs)
         except Exception as ex:
             print(ex)
+            Response(str(ex))
 
-    def add_user(self, name: str, age: int) -> dict:
-        user = {
-            'id': next(self.__id),
-            'name': name,
-            'age': age,
-        }
-
-        self.__users.append(user)
-        self._write_users()
-
-        return user
-
-    def get_user(self, id: int) -> dict | None:
-        return next((u for u in self.__users if u['id'] == id), None)
-
-    def set_user(self, id: int, name: str, age: int) -> dict | None:
-        user = self.get_user(id)
-
-        if user:
-            user['name'] = name
-            user['age'] = age
-            self._write_users()
-
-        return user
-
-    def del_user(self, id: int) -> int:
-        index = next((i for i, u in enumerate(self.__users) if u['id'] == id), -1)
-
-        if index >= 0:
-            del self.__users[index]
-            self._write_users()
-
-        return index
+    return inner
 
 
 class UsersFileStorage:
@@ -137,9 +79,11 @@ class UserListCreateView(APIView, UsersFileStorage):
         super().__init__(**kwargs)
         print('**** init ****', __class__.__name__)
 
+    @throwable
     def get(self, *args, **kwargs):
         return Response(self.db.users)
 
+    @throwable
     def post(self, *args, **kwargs):
         data = self.request.data
         user = self.db.add_user(data['name'], data['age'])
@@ -153,6 +97,7 @@ class UserRetrieveUpdateDestroy(APIView, UsersFileStorage):
         super().__init__(**kwargs)
         print('**** init ****', __class__.__name__)
 
+    @throwable
     def get(self, *args, **kwargs):
         pk = kwargs.get('pk')
 
@@ -163,6 +108,7 @@ class UserRetrieveUpdateDestroy(APIView, UsersFileStorage):
 
         return Response(user)
 
+    @throwable
     def put(self, *args, **kwargs):
         data = self.request.data
         pk = kwargs.get('pk')
@@ -174,6 +120,7 @@ class UserRetrieveUpdateDestroy(APIView, UsersFileStorage):
 
         return Response(user)
 
+    @throwable
     def delete(self, *args, **kwargs):
         pk = kwargs.get('pk')
 
