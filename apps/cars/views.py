@@ -3,13 +3,13 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from .models import CarModel
-from .serializers import CarSerializer
+from .serializers import CarSerializer, CarSerializerForList
 
 
 class CarListCreateView(APIView):
     def get(self, *args, **kwargs):
         cars = CarModel.objects.all()
-        serializer = CarSerializer(instance=cars, many=True)
+        serializer = CarSerializerForList(instance=cars, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, *args, **kwargs):
