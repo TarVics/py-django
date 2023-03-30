@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView, UpdateAPIView
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.generics import GenericAPIView, ListCreateAPIView, UpdateAPIView
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from core.permissions.is_superuser import IsSuperuser
@@ -54,6 +54,7 @@ class AdminToUserView(GenericAPIView):
         user.save()
         serializer = UserSerializer(user)
         return Response(serializer.data, status.HTTP_200_OK)
+
 
 class UserListCreateView(ListCreateAPIView):
     serializer_class = UserSerializer
