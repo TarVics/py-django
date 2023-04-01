@@ -45,3 +45,5 @@ class CarPhotoDeleteView(DestroyAPIView):
 
     def perform_destroy(self, instance):
         instance.photo.delete()
+        # instance.delete()
+        super().perform_destroy(instance)
