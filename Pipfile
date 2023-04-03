@@ -15,6 +15,7 @@ djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 mysqlclient = "*"
 pillow = "*"
+django-dotenv = "*"
 
 [dev-packages]
 isort = "*"

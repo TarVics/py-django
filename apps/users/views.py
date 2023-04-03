@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from core.permissions.is_superuser import IsSuperuser
+from core.services.email_service import EmailService
 
 from apps.auto_parks.serializers import AutoParkSerializer
 from apps.users.models import ProfileModel
@@ -128,3 +129,10 @@ class UserUnblockView(GenericAPIView):
         user.save()
         serializer = UserSerializer(user)
         return Response(serializer.data, status.HTTP_200_OK)
+
+
+class TestSendEmailView(GenericAPIView):
+    
+    def get(self, *args, **kwargs):
+        EmailService.send_email({'user': 'Max'})
+        return Response(status=status.HTTP_200_OK)
