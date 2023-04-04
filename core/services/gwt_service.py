@@ -13,7 +13,6 @@ from apps.users.models import UserModel as User
 
 UserModel: User = get_user_model()
 
-
 ActivateTokenClassType = Type[BlacklistMixin | Token]
 
 
@@ -24,6 +23,11 @@ class ActionToken(BlacklistMixin, Token):
 class ActivateToken(ActionToken):
     token_type = ActionEnum.ACTIVATE.token_type
     lifetime = ActionEnum.ACTIVATE.exp_time
+
+
+class RecoveryPasswordToken(ActionToken):
+    token_type = ActionEnum.RECOVERY_PASSWORD.token_type
+    lifetime = ActionEnum.RECOVERY_PASSWORD.exp_time
 
 
 class JWTService:
@@ -44,4 +48,3 @@ class JWTService:
         user_id = token_res.payload.get('user_id')
 
         return get_object_or_404(UserModel, pk=user_id)
-        
