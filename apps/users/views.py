@@ -5,13 +5,16 @@ from rest_framework.generics import GenericAPIView, ListCreateAPIView, UpdateAPI
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
+from core.permissions.block_unblock import BlockUnblockUserPermission
 from core.permissions.is_superuser import IsSuperuser
-from core.services.email_service import EmailService
 
 from apps.auto_parks.serializers import AutoParkSerializer
 from apps.users.models import ProfileModel
 from apps.users.models import UserModel as User
 from apps.users.serializers import ProfileSerializer, UserSerializer
+
+# from core.services.email_service import EmailService
+
 
 """
 from django.contrib.auth import get_user_model
@@ -90,7 +93,8 @@ class UserProfileUpdateView(UpdateAPIView):
 
 
 class UserBlockView(GenericAPIView):
-    permission_classes = (IsAdminUser,)
+    # permission_classes = (IsAdminUser,)
+    permission_classes = (BlockUnblockUserPermission,)
 
     def get_queryset(self):
         return UserModel.objects.exclude(pk=self.request.user.id)
@@ -98,8 +102,8 @@ class UserBlockView(GenericAPIView):
     def patch(self, *args, **kwargs):
         user = self.get_object()
 
-        if not self.request.user.is_staff or user.is_staff and not self.request.user.is_superuser:
-            return Response('Permission denied', status.HTTP_403_FORBIDDEN)
+        # if not self.request.user.is_staff or user.is_staff and not self.request.user.is_superuser:
+        #     return Response('Permission denied', status.HTTP_403_FORBIDDEN)
 
         if not user.is_active:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -111,7 +115,8 @@ class UserBlockView(GenericAPIView):
 
 
 class UserUnblockView(GenericAPIView):
-    permission_classes = (IsAdminUser,)
+    # permission_classes = (IsAdminUser,)
+    permission_classes = (BlockUnblockUserPermission,)
 
     def get_queryset(self):
         return UserModel.objects.exclude(pk=self.request.user.id)
@@ -119,8 +124,8 @@ class UserUnblockView(GenericAPIView):
     def patch(self, *args, **kwargs):
         user = self.get_object()
 
-        if not self.request.user.is_staff or user.is_staff and not self.request.user.is_superuser:
-            return Response('Permission denied', status.HTTP_403_FORBIDDEN)
+        # if not self.request.user.is_staff or user.is_staff and not self.request.user.is_superuser:
+        #     return Response('Permission denied', status.HTTP_403_FORBIDDEN)
 
         if user.is_active:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -131,8 +136,8 @@ class UserUnblockView(GenericAPIView):
         return Response(serializer.data, status.HTTP_200_OK)
 
 
-class TestSendEmailView(GenericAPIView):
-    
-    def get(self, *args, **kwargs):
-        EmailService.send_email({'user': 'Max'})
-        return Response(status=status.HTTP_200_OK)
+# class TestSendEmailView(GenericAPIView):
+#
+#     def get(self, *args, **kwargs):
+#         EmailService.send_email({'user': 'Max'})
+#         return Response(status=status.HTTP_200_OK)

@@ -7,5 +7,12 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'EXCEPTION_HANDLER': 'core.handlers.error_handler.custom_error_exception',
+    # 'PAGE_SIZE': 10,
+    'DEFAULT_PAGINATION_CLASS': 'core.pagination.page_pagination.PagePagination',
+
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
 }

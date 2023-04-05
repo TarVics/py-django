@@ -1,15 +1,23 @@
 from rest_framework import status
 from rest_framework.generics import DestroyAPIView, GenericAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny
+# from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
+from .filters import CarFilter
 from .models import CarModel, CarPhotoModel
 from .serializers import CarPhotoSerializer, CarSerializer
 
 
 class CarListCreateView(ListAPIView):
+    permission_classes = (AllowAny, )
+
     serializer_class = CarSerializer
+    # pagination_class = PageNumberPagination
+    filterset_class = CarFilter
 
     def get_queryset(self):
+        # qs = CarModel.objects.get_cars_by_auto_park_id(3)
         qs = CarModel.objects.all()
         params_dict = self.request.query_params.dict()
 

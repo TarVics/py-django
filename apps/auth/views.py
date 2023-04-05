@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from core.services.email_service import EmailService
 from core.services.gwt_service import ActivateToken, JWTService, RecoveryPasswordToken
 
-from apps.auth.serializers import EmailSerializer
+from apps.auth.serializers import EmailSerializer, PasswordSerializer
 from apps.users.models import UserModel as User
 from apps.users.serializers import UserSerializer
 
@@ -63,7 +63,7 @@ class RecoveryPasswordView(GenericAPIView):
         token = kwargs['token']
         user: User = JWTService.validate_token(token, RecoveryPasswordToken)
         data = self.request.data
-        serializer = UserSerializer(data=data, partial=True)
+        serializer = PasswordSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         user.set_password(data['password'])
         user.save()
