@@ -32,5 +32,5 @@ class ProfileModel(models.Model):
     name = models.CharField(max_length=20, validators=[V.RegexValidator(RegEx.NAME.regex, RegEx.NAME.message)])
     surname = models.CharField(max_length=20, validators=[V.RegexValidator(RegEx.NAME.regex, RegEx.NAME.message)])
     age = models.IntegerField(validators=[V.MinValueValidator(18), V.MaxValueValidator(150)])
-    user = models.OneToOneField(UserModel, on_delete=models.CASCADE, related_name='profile')
     photo = models.ImageField(upload_to=upload_to, blank=True)
+    user = models.OneToOneField(UserModel, on_delete=models.CASCADE, related_name='profile')

@@ -10,11 +10,13 @@ from .serializers import CarPhotoSerializer, CarSerializer
 
 
 class CarListCreateView(ListAPIView):
-    permission_classes = (AllowAny, )
-
+    """
+    List of cars
+    """
     serializer_class = CarSerializer
-    # pagination_class = PageNumberPagination
     filterset_class = CarFilter
+    permission_classes = (AllowAny, )
+    # pagination_class = PageNumberPagination
 
     def get_queryset(self):
         # qs = CarModel.objects.get_cars_by_auto_park_id(3)
@@ -28,6 +30,16 @@ class CarListCreateView(ListAPIView):
 
 
 class CarRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    """
+    get:
+        Get car by id
+    patch:
+        Partial update car by id
+    put:
+        Full update car by id
+    delete:
+        Delete car by id
+    """
     queryset = CarModel.objects.all()
     serializer_class = CarSerializer
 
@@ -37,15 +49,14 @@ class CarAddPhotosView(GenericAPIView):
     serializer_class = CarPhotoSerializer
 
     def post(self, *args, **kwargs):
-        car = self.get_object()
         files = self.request.FILES
+        car = self.get_object()
         for key in files:
             serializer = CarPhotoSerializer(data={'photo': files[key]})
             serializer.is_valid(raise_exception=True)
             serializer.save(car=car)
-
         serializer = CarSerializer(car)
-        return Response(serializer.data, status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CarPhotoDeleteView(DestroyAPIView):
