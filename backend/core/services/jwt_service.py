@@ -7,13 +7,12 @@ from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.tokens import BlacklistMixin, Token
 
 from core.enums.action_token_enum import ActionEnum
-from core.exceptions import JWTException
+from core.exceptions.jwt_exception import JWTException
 
 from apps.users.models import UserModel as User
 
 UserModel: User = get_user_model()
-
-ActivateTokenClassType = Type[BlacklistMixin | Token]
+ActionTokenClassType = Type[BlacklistMixin | Token]
 
 
 class ActionToken(BlacklistMixin, Token):
@@ -30,14 +29,18 @@ class RecoveryPasswordToken(ActionToken):
     lifetime = ActionEnum.RECOVERY_PASSWORD.exp_time
 
 
-class JWTService:
+class SocketToken(ActionToken):
+    token_type = ActionEnum.SOCKET.token_type
+    lifetime = ActionEnum.SOCKET.exp_time
 
+
+class JWTService:
     @staticmethod
-    def create_token(user, token_class: ActivateTokenClassType):
+    def create_token(user, token_class: ActionTokenClassType):
         return token_class.for_user(user)
 
     @staticmethod
-    def validate_token(token, token_class: ActivateTokenClassType):
+    def validate_token(token, token_class: ActionTokenClassType):
         try:
             token_res = token_class(token)
             token_res.check_blacklist()

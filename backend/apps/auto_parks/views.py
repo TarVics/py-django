@@ -15,6 +15,7 @@ class AutoParkListCreateView(ListCreateAPIView):
     # permission_classes = (IsAuthenticatedOrReadOnly,)
     permission_classes = (AllowAny,)
     filterset_class = AutoParkFilter
+    pagination_class = None
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
