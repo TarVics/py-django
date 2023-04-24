@@ -17,6 +17,7 @@ const AutoParks = () => {
 
   useEffect(() => {
     chatSocketInit().then(value => setChatSocket(value))
+    autoParkSocketInit().then()
   }, [])
 
   const chatSocketInit = async () => {
@@ -25,9 +26,27 @@ const AutoParks = () => {
     client.onopen = () => {
       console.log('Chat socket connected')
     }
-    client.onmessage=(msg)=>{
+    client.onmessage = (msg) => {
       console.log(msg.data)
-      setMessages(prev=>[...prev, JSON.parse(msg.data)])
+      setMessages(prev => [...prev, JSON.parse(msg.data)])
+    }
+    return client
+  }
+  const autoParkSocketInit = async () => {
+    const client = await socketService.autoParks()
+
+    client.onopen = () => {
+      console.log('AutoParkSocket connected')
+      client.send(JSON.stringify({
+        action: 'subscribe_to_auto_park_activity',
+        request_id: new Date().getTime()
+      }))
+    }
+
+    client.onmessage=(msg)=>{
+      const data = JSON.parse(`${msg.data}`)
+      console.log(data)
+      setAutoParks(prevState => [...prevState, data.data])
     }
     return client
   }
